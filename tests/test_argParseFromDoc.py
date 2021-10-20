@@ -125,6 +125,62 @@ class Test(TestCase):
         result = fun1( ** vars(args))
         self.assertTrue( result == False)
 
+
+    def test_get_parser_kwargs(self):
+        def fun1(a: int, b: bool = False, *args, **kwargs)-> bool:
+            '''
+            :param a: input 1
+            :param b: input bool
+            :return: an int
+            '''
+            return bool(a) & b
+
+        parser = get_parser_from_function(fun1)
+
+        parser = get_parser_from_function(fun1)
+        with StringIO() as strFile:
+            parser.print_help(strFile)
+            strFile.seek(0)
+            self._check_help( strFile.read(), ["  --a A       input 1 Default=None",
+                                               "  --b         input bool Action: store_true for variable b"])
+
+        args = parser.parse_args(["--a", "1", "--b" ])
+        result = fun1( ** vars(args))
+        self.assertTrue( result == True)
+
+        args = parser.parse_args(["--a", "0", "--b" ])
+        result = fun1( ** vars(args))
+        self.assertTrue( result == False)
+
+        args = parser.parse_args(["--a", "1" ])
+        result = fun1( ** vars(args))
+        self.assertTrue( result == False)
+
+
+    def test_get_parser_class(self):
+        class Adder():
+            def __init__(self, to_add: int, **kwargs):
+                '''
+                :param to_add: the parameter to add
+                '''
+
+                self.to_add = to_add
+
+            def add(self, b: int, **kwargs):
+                '''
+                :param b: number to be added
+                '''
+                return self.to_add + b
+
+        parser = get_parser_from_function(Adder.__init__)
+        get_parser_from_function(Adder.add, parser=parser)
+        args = vars(parser.parse_args(["--b", "2", "--to_add", "1" ]))
+        adder = Adder(**args)
+        result = adder.add(**args)
+
+        self.assertTrue( result == 3 )
+
+
     def test_get_parser_duplicated_arg(self):
         def fun1(a: str, ns: int, x: int)-> int:
             '''
@@ -136,8 +192,6 @@ class Test(TestCase):
             return 1
 
         self.assertRaises(AssertionError, get_parser_from_function, fun1)
-
-
 
     def test_get_parser_mismatch_docu_typing(self):
         def fun1(a: str, ns: int, x: int)-> int:

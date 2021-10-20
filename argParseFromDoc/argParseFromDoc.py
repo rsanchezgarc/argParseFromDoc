@@ -13,17 +13,25 @@ from docstring_parser import parse
 def _get_type_nargs_default_dict(callable: Callable):
     signature = inspect.signature(callable)
     name_to_type_nargs_default = OrderedDict()
-    for k, v in signature.parameters.items():
+    n_args = len(signature.parameters.items())
+    items = signature.parameters.items()
+    for i, (k, v) in enumerate(items):
+        if i == 0 and str(v) == "self":
+            continue
+        elif i == n_args-2 and str(v).replace(" ", "") == "*args":
+            continue
+        elif i == n_args-1 and str(v).replace(" ", "") == "**kwargs":
+            continue
         default = None if v.default is inspect.Parameter.empty else v.default
-        _type, narg = fromTypeToTypeFun(v.annotation)
+        _type, narg = fromTypeToTypeFun(v)
         assert k not in name_to_type_nargs_default, "argParseFromDoc: Error, duplicated argument %s" % k
         name_to_type_nargs_default[k] = (_type, narg, default)
 
     return name_to_type_nargs_default
 
 
-def fromTypeToTypeFun(docuType):
-
+def fromTypeToTypeFun(docStringElem):
+    docuType = docStringElem.annotation
     if isinstance(docuType, _GenericAlias):
         # if i
         complex_type = docuType._name
@@ -52,7 +60,7 @@ def fromTypeToTypeFun(docuType):
     elif strType == "BinaryIO":
         _type = argparse.FileType('rb')
     else:
-        raise ValueError("argParseFromDoc: Not supported type: " + str(strType))
+        raise ValueError("argParseFromDoc: Not supported type: %s (%s)"%( str(strType), docStringElem))
     return _type, nargs
 
 
