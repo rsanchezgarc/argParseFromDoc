@@ -14,7 +14,7 @@ ArgumentParser(s) given a documented function.
 
 - Option 1. Cloning this repository:
 ```
-https://github.com/rsanchezgarc/argParseFromDoc.git
+git clone https://github.com/rsanchezgarc/argParseFromDoc.git
 cd argParseFromDoc
 pip install .
 ```
@@ -31,6 +31,8 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
   - Files (defined as`typing.TextIO` and `typing.BinaryIO`)
 - Ignoring/selecting a subset of the arguments of the function
 - Creating a new parser or adding new arguments to it
+- Several docsctring formats (see [docstring_parser](https://github.com/rr-/docstring_parser) )
+- Support for methods assuming first argument in definition is `self`
 
 ### Assumptions
   - Positional arguments. Functions can have positional arguments, but the parser will treat them as 
@@ -58,7 +60,11 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
     cat /etc/passwd | python count_lines --inputFile -
  
     ```
-    
+  - Methods, including `__init__`, are supported providing self is always using in as the first 
+    argument in the definition
+  - When defining functions, `*arg` and `**kwargs` are ignored for the parser. No other `*` or `**` argument
+    is supported.
+
 ### Usage
 
 You only need to document the type and possible default values for the arguments of your functions
