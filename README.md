@@ -14,7 +14,7 @@ ArgumentParser(s) given a documented function.
 
 - Option 1. Cloning this repository:
 ```
-git clone https://github.com/rsanchezgarc/argParseFromDoc
+https://github.com/rsanchezgarc/argParseFromDoc.git
 cd argParseFromDoc
 pip install .
 ```
