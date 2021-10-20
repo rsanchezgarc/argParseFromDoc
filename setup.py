@@ -19,7 +19,7 @@ def readme():
 
 
 install_requires = [
-  'docstring-parser-0.12'
+  'docstring-parser==0.12'
 ]
 
 setup(name='argParseFromDoc',
