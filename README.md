@@ -38,7 +38,8 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
   - Positional arguments. Functions can have positional arguments, but the parser will treat them as 
     if they were keyword/optional (always `--argname VALUE`)
   - If no default value is provided for an argument in the typing hint, argument will be considered as
-    required (`parser.add_argument(..., required=True)`).
+    required (`parser.add_argument(..., required=True)`). The same applies to `default=None` except if the
+    name of the argument is included in `args_optional`. E.g `get_parser_from_function(..., args_optional=[name1, name2...])`  
   - Boolean arguments:
     - Boolean arguments must be provided with default value.
     - If a boolean argument defaults to False (`name:bool=False`), the parser sets

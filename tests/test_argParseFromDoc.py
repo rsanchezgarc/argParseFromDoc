@@ -270,3 +270,20 @@ class Test(TestCase):
             return a
 
         self.assertRaises(ValueError, get_parser_from_function, fun1)
+
+    def test_argumentNoneAndOptional(self):
+        def fun(a: int, b: int = None):
+            '''
+            @param a: first number
+            @param b: optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = get_parser_from_function(fun, args_optional=["b"])
+        args = vars(parser.parse_args(["--a", "1" ]))
+        result = fun(**args)
+        self.assertEqual(result, 1)
+
+        args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
+        result = fun(**args)
+        self.assertEqual(result, 3)

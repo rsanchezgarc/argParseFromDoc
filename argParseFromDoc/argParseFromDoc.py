@@ -65,6 +65,7 @@ def fromTypeToTypeFun(docStringElem):
 
 
 def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = None, args_to_include: List[str] = None,
+                             args_optional: List[str] = None,
                              parser: Union[ArgumentParser, _ArgumentGroup] = None, *args, **kwargs):
     if parser is None:
         parser = ArgumentParser(*args, **kwargs)
@@ -81,6 +82,9 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
 
     if args_to_include is None:
         args_to_include = set([(elem.arg_name) for elem in docstring.params])
+
+    if args_optional is None:
+        args_optional = set([])
 
     params = []
 
@@ -115,6 +119,6 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
         else:
             parser.add_argument("--" + name, type=typeFun, nargs=nargs, help=help + " Default=%(default)s",
                                 default=default,
-                                required=default is None)
+                                required= name not in args_optional and default is None)
 
     return parser
