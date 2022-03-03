@@ -3,6 +3,7 @@ from io import StringIO
 from typing import Tuple, List, Dict, TextIO
 from unittest import TestCase
 
+from argParseFromDoc import AutoArgumentParser
 from argParseFromDoc.argParseFromDoc import get_parser_from_function
 
 
@@ -323,3 +324,30 @@ class Test(TestCase):
         args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
         result = fun(**args)
         self.assertEqual(result, 3)
+
+    def test_AutoArgumentParser1(self):
+        parser = AutoArgumentParser()
+        parser.add_argument("--a", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        args = parser.parse_args_groups(["--a", "1"])
+        self.assertEqual(args["g"].g1, -1)
+
+    def test_AutoArgumentParser2(self):
+
+        def fun(a: int, b: int = None):
+            '''
+            @param a: first number
+            @param b: optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        parser.add_args_from_function(fun)
+        parser.print_help()
+        pars1 =  parser.parse_args(["--a", "1", "--b", "2"])
+        pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
+        self.assertEqual(pars1.g1, pars2["g"].g1)

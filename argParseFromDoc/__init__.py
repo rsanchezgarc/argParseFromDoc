@@ -1,1 +1,2 @@
 from argParseFromDoc.argParseFromDoc import get_parser_from_function
+from argParseFromDoc.AutoArgumentParser import AutoArgumentParser
