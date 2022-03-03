@@ -99,10 +99,24 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
     params = []
 
     names_in_doc = [(elem.arg_name) for elem in docstring.params]
+    keys_list = list(name_to_type_nargs_default_dict.keys())
+    msg = ""
+    for i in range(max(len(names_in_doc ), len(name_to_type_nargs_default_dict))):
+        try:
+            docname = names_in_doc[i]
+        except IndexError:
+            docname = "----"
+        try:
+            sig_name = keys_list[i]
+            sig_values = name_to_type_nargs_default_dict.get(sig_name, "****")
+        except IndexError:
+            sig_name = "****"
+            sig_values = None
+        msg += "%20s\t%10s %20s\n"%(docname, sig_name, sig_values)
+
 
     error_msg_for_mismatch = "argParseFromDoc: Error, mismatch between type hints and" \
-                             " documentation params.\ndocumentation: %s\ntype hits: %s" % (
-                             str(names_in_doc), tuple(name_to_type_nargs_default_dict.items()))
+                             " documentation params.\ndocumentation\ttype_hints_name\ttype_hints_info:\n%s" % (msg)
 
     assert names_in_doc == list(name_to_type_nargs_default_dict.keys()), error_msg_for_mismatch
 
