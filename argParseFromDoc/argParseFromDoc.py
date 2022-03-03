@@ -10,22 +10,29 @@ from docstring_parser import parse
 
 # TODO: document all functions
 
-def _get_type_nargs_default_dict(callable: Callable):
+def _get_type_nargs_default_dict(callable: Callable, args_to_ignore: List[str], args_to_include: List[str] = None):
     signature = inspect.signature(callable)
     name_to_type_nargs_default = OrderedDict()
     n_args = len(signature.parameters.items())
     items = signature.parameters.items()
-    for i, (k, v) in enumerate(items):
+
+    for i, (argname, v) in enumerate(items):
+
         if i == 0 and str(v) == "self":
             continue
         elif i == n_args-2 and str(v).replace(" ", "") == "*args":
             continue
         elif i == n_args-1 and str(v).replace(" ", "") == "**kwargs":
             continue
+
+        if argname in args_to_ignore or (args_to_include is not None and argname not in args_to_include):
+            name_to_type_nargs_default[argname] = None
+            continue
+
         default = None if v.default is inspect.Parameter.empty else v.default
         _type, narg = fromTypeToTypeFun(v)
-        assert k not in name_to_type_nargs_default, "argParseFromDoc: Error, duplicated argument %s" % k
-        name_to_type_nargs_default[k] = (_type, narg, default)
+        assert argname not in name_to_type_nargs_default, "argParseFromDoc: Error, duplicated argument %s" % argname
+        name_to_type_nargs_default[argname] = (_type, narg, default)
 
     return name_to_type_nargs_default
 
@@ -33,7 +40,6 @@ def _get_type_nargs_default_dict(callable: Callable):
 def fromTypeToTypeFun(docStringElem):
     docuType = docStringElem.annotation
     if isinstance(docuType, _GenericAlias):
-        # if i
         complex_type = docuType._name
         assert complex_type in ["Tuple",
                                 "List"], "argParseFromDoc: Error, only Tuple or List are supported, you used %s" % complex_type
@@ -42,6 +48,8 @@ def fromTypeToTypeFun(docStringElem):
         assert len(inner_args) == 1, "argParseFromDoc: Error, only simple aggregated types supported"
         docuType = inner_args[0]
         assert not isinstance(docuType, _GenericAlias), "argParseFromDoc: Error, nested types are not supported"
+
+        # TODO: Implement Litaral for python 3.8+
     else:
         nargs = None
 
@@ -72,7 +80,6 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
 
     assert hasattr(callable, "__doc__"), "argParseFromDoc: Error, __doc__ missing in callable %s" % callable
 
-    name_to_type_nargs_default_dict = _get_type_nargs_default_dict(callable)
 
     docstring = callable.__doc__
     docstring = parse(docstring)
@@ -82,6 +89,9 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
 
     if args_to_include is None:
         args_to_include = set([(elem.arg_name) for elem in docstring.params])
+
+    name_to_type_nargs_default_dict = _get_type_nargs_default_dict(callable, args_to_ignore, args_to_include)
+
 
     if args_optional is None:
         args_optional = set([])
@@ -101,7 +111,10 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
         assert elem.arg_name not in seen_doc_params, "argParseFromDoc: Error, duplicated argument %s" % elem.arg_name
         seen_doc_params.add(elem.arg_name)
         if elem.arg_name not in args_to_ignore and elem.arg_name in args_to_include:
-            typeFun, nargs, default = name_to_type_nargs_default_dict[elem.arg_name]
+            info_from_signature = name_to_type_nargs_default_dict[elem.arg_name]
+            if info_from_signature is None:
+                continue
+            typeFun, nargs, default = info_from_signature
             params.append((elem.arg_name, typeFun, nargs, default, elem.description))
 
     for paramTuple in params:

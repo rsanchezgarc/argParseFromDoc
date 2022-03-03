@@ -287,3 +287,39 @@ class Test(TestCase):
         args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
         result = fun(**args)
         self.assertEqual(result, 3)
+
+    # def test_Literal_as_Choice(self): #TODO: Implement litaral for python 3.8+
+    #     def fun( msg : Literal["hola", "adios"]):
+    #         '''
+    #         @param a: a predefined option message
+    #         @param b: optional argument
+    #         '''
+    #         return msg
+    #
+    #     parser = get_parser_from_function(fun)
+    #     args = vars(parser.parse_args(["--a", "1" ]))
+    #     result = fun(**args)
+    #     self.assertEqual(result, 1)
+    #
+    #     args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
+    #     result = fun(**args)
+    #     self.assertEqual(result, 3)
+
+    def test_ignoreArgs(self):
+        def fun(a: int, b: int = 1, c:Exception =None):
+            '''
+            @param a: first number
+            @param b: second number
+            @param c: c is an optional argument to be ignored. Exception is not supported by argParseFromDocs
+            '''
+            return a if b is None else a + b
+
+        parser = get_parser_from_function(fun, args_to_ignore=["c"])
+        # parser.print_help()
+        args = vars(parser.parse_args(["--a", "1" ]))
+        result = fun(**args)
+        self.assertEqual(result, 2)
+
+        args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
+        result = fun(**args)
+        self.assertEqual(result, 3)
