@@ -54,7 +54,7 @@ def fromTypeToTypeFun(docStringElem):
     #Check optional or union
     if isinstance(docuType, _GenericAlias):
         complex_type = docuType._name
-        if complex_type is None: #Union type, or Literal type
+        if complex_type == "Optional" or complex_type is None: #Union type, or Literal type, depending on the version
             if docuType.__origin__ == typing.Union:
                 # check if we are in Union[XXX,NoneType]
                 inner_args = docuType.__args__
@@ -70,7 +70,7 @@ def fromTypeToTypeFun(docStringElem):
 
     if isinstance(docuType, _GenericAlias):
         complex_type = docuType._name
-        if complex_type is None: #Union type, or Literal type
+        if complex_type == "Literal" or complex_type is None: #Union type, or Literal type, depending on the version
             if docuType.__origin__ == getattr(typing, "Literal", "Literal"):
                 _type = tuple(docuType.__args__)
                 return _type, nargs, required
