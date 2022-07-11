@@ -30,7 +30,8 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
   - (Homogeneous) Lists of any of the previous types (defined as`typing.List[primitive_type]`)
   - Files (defined as`typing.TextIO` and `typing.BinaryIO`)
 - Ignoring/selecting a subset of the arguments of the function
-- Creating a new parser or adding new arguments to it
+  - Use `myarg:typing.Optional[VALID_TYPE]=None` to set it as not required parameter or `args_optional=["myarg"]` 
+- Creating a new parser or adding new arguments to it. You can use also parser groups
 - Several docsctring formats (see [docstring_parser](https://github.com/rr-/docstring_parser) )
 - Support for methods assuming first argument in definition is `self`
 
@@ -39,7 +40,8 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
     if they were keyword/optional (always `--argname VALUE`)
   - If no default value is provided for an argument in the typing hint, argument will be considered as
     required (`parser.add_argument(..., required=True)`). The same applies to `default=None` except if the
-    name of the argument is included in `args_optional`. E.g `get_parser_from_function(..., args_optional=[name1, name2...])`  
+    name of the argument is included in `args_optional` or it is declared as `typing.Optional`. 
+  - E.g `get_parser_from_function(..., args_optional=[name1, name2...])`  
   - Boolean arguments:
     - Boolean arguments must be provided with default value.
     - If a boolean argument defaults to False (`name:bool=False`), the parser sets
@@ -61,7 +63,7 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
     cat /etc/passwd | python count_lines --inputFile -
  
     ```
-  - Methods, including `__init__`, are supported providing self is always using in as the first 
+  - Methods, including `__init__`, are supported providing `self` is always using in as the first 
     argument in the definition
   - When defining functions, `*arg` and `**kwargs` are ignored for the parser. No other `*` or `**` argument
     is supported.
@@ -105,7 +107,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(add(**vars(args)))
 ```
+Or you can directly use the AutoArgumentParser classs
 
+```
+if __name__ == "__main__":
+    from argParseFromDoc import AutoArgumentParser
+    parser = AutoArgumentParser()
+    parser.add_args_from_function(add)
+```
 If you want to add to a previously instantiated parser the arguements of the function,
 you just need to provide the original parser (or group) to the `get_parser_from_function` function.
 
@@ -127,7 +136,8 @@ if __name__ == "__main__":
     print(add(**vars(args)))
 ```
 Finally, if your function has some arguments that you do not want to include
-to the parser, you can use the `args_to_ignore` or `args_to_include options`. 
+to the parser, you can use the `args_to_ignore` option or if you want to use only a subset,
+use the `args_to_include` option. 
 
 ```
 def manyArgsFun(a: int, b: int, c: int = 1, d: int = 2, e: str = "oneStr"):
@@ -154,4 +164,4 @@ if __name__ == "__main__":
 ```
 
 
-Some additional examples can be found in [examples folder](examples)
+Some additional examples can be found in [examples folder](examples) or in `tests/test_argParseFromDoc.py`

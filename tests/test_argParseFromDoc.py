@@ -1,6 +1,6 @@
 import tempfile
 from io import StringIO
-from typing import Tuple, List, Dict, TextIO
+from typing import Tuple, List, Dict, TextIO, Optional
 from unittest import TestCase
 
 from argParseFromDoc import AutoArgumentParser
@@ -289,22 +289,56 @@ class Test(TestCase):
         result = fun(**args)
         self.assertEqual(result, 3)
 
-    # def test_Literal_as_Choice(self): #TODO: Implement litaral for python 3.8+
-    #     def fun( msg : Literal["hola", "adios"]):
-    #         '''
-    #         @param a: a predefined option message
-    #         @param b: optional argument
-    #         '''
-    #         return msg
-    #
-    #     parser = get_parser_from_function(fun)
-    #     args = vars(parser.parse_args(["--a", "1" ]))
-    #     result = fun(**args)
-    #     self.assertEqual(result, 1)
-    #
-    #     args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
-    #     result = fun(**args)
-    #     self.assertEqual(result, 3)
+    def test_argumentNoneAndOptional2(self):
+        def fun(a: int, b: Optional[int] = None):
+            '''
+            @param a: first number
+            @param b: optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = get_parser_from_function(fun)
+        args = vars(parser.parse_args(["--a", "1" ]))
+        result = fun(**args)
+        self.assertEqual(result, 1)
+
+        args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
+        result = fun(**args)
+        self.assertEqual(result, 3)
+
+    def test_argumentNoneAndOptional3(self):
+        def fun(a: int, b: Optional[List[int]] = None):
+            '''
+            @param a: first number
+            @param b: optional argument
+            '''
+            return a if b is None else a + b[0]
+
+        parser = get_parser_from_function(fun)
+        args = vars(parser.parse_args(["--a", "1" ]))
+        result = fun(**args)
+        self.assertEqual(result, 1)
+
+        args = vars(parser.parse_args(["--a", "1", "--b", "2" ]))
+        result = fun(**args)
+        self.assertEqual(result, 3)
+
+    def test_Literal_as_Choice(self):
+        from typing import Literal
+        def fun( msg : Literal["hola", "adios"]):
+            '''
+            @param msg: a predefined option message
+            '''
+            return msg
+
+        parser = get_parser_from_function(fun)
+        args = vars(parser.parse_args(["--msg", "hola" ]))
+        result = fun(**args)
+        self.assertEqual(result, "hola")
+
+        args = vars(parser.parse_args(["--msg", "adios" ]))
+        result = fun(**args)
+        self.assertEqual(result, "adios")
 
     def test_ignoreArgs(self):
         def fun(a: int, b: int = 1, c:Exception =None):
