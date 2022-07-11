@@ -18,9 +18,8 @@ def readme():
       return "Description not available due to unexpected error: "+str(e)
 
 
-install_requires = [
-  'docstring-parser==0.12'
-]
+with open(os.path.abspath(os.path.join(os.path.dirname(__file__),"requirements.txt"))) as f:
+    install_requires = [ line for line in f.readlines() if line and not line.startswith("#")]
 
 setup(name='argParseFromDoc',
       version=VERSION,
