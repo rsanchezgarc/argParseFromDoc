@@ -385,3 +385,6 @@ class Test(TestCase):
         pars1 =  parser.parse_args(["--a", "1", "--b", "2"])
         pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
         self.assertEqual(pars1.g1, pars2["g"].g1)
+
+    # def test_fail(self):
+    #     self.fail()

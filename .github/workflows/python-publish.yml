@@ -35,6 +35,7 @@ jobs:
         ls
         python -m pip install --upgrade pip
         pip install build
+        python -m unittest discover  &&  echo "Tests Exit code $?"
     - name: Build package
       run: python -m build
     - name: Publish package
