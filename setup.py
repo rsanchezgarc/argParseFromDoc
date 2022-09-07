@@ -3,7 +3,6 @@ import os
 import setuptools
 from setuptools import setup
 
-VERSION="0.0.4"
 
 def readme():
   readmePath = os.path.abspath(os.path.join(__file__, "..", "README.md"))
@@ -17,12 +16,19 @@ def readme():
     except Exception as e:
       return "Description not available due to unexpected error: "+str(e)
 
+def getVersion():
+  initFname = os.path.abspath(os.path.join(__file__, "..", "argParseFromDoc", "__init__.py"))
+  import re
+  with open(initFname) as f:
+      line =  f.readline()
+  version = re.match("__version__\s+=\s+\"([\d+]\.[\d+]\.[\d+])\"", line).group(1)
+  return version
 
 with open(os.path.abspath(os.path.join(os.path.dirname(__file__),"requirements.txt"))) as f:
     install_requires = [ line for line in f.readlines() if line and not line.startswith("#")]
 
 setup(name='argParseFromDoc',
-      version=VERSION,
+      version=getVersion(),
       description='Simple argument parser for documented functions',
       long_description=readme(),
       long_description_content_type="text/markdown",

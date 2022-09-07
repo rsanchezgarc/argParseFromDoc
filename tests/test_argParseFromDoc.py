@@ -4,7 +4,7 @@ from typing import Tuple, List, Dict, TextIO, Optional
 from unittest import TestCase
 
 from argParseFromDoc import AutoArgumentParser
-from argParseFromDoc.argParseFromDoc import get_parser_from_function
+from argParseFromDoc.autoArgparseFunction import get_parser_from_function
 
 
 class Test(TestCase):
@@ -386,5 +386,127 @@ class Test(TestCase):
         pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
         self.assertEqual(pars1.g1, pars2["g"].g1)
 
-    # def test_fail(self):
-    #     self.fail()
+    def test_numpyLikeDoc0(self):
+
+        def fun(a: int, b: int = None):
+            '''
+            Function definition
+
+            Parameters
+            ----------
+            a
+                first number
+            b
+                optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        parser.add_args_from_function(fun)
+        parser.print_help()
+        pars1 =  parser.parse_args(["--a", "1", "--b", "2"])
+        pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
+        self.assertEqual(pars1.g1, pars2["g"].g1)
+
+    def test_numpyLikeDoc1(self):
+
+        def fun(a: int, b: int = None):
+            '''
+            Function definition
+
+            Parameters
+            ----------
+            a: int
+                first number
+            b: int
+                optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        parser.add_args_from_function(fun)
+        parser.print_help()
+        pars1 =  parser.parse_args(["--a", "1", "--b", "2"])
+        pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
+        self.assertEqual(pars1.g1, pars2["g"].g1)
+
+    def test_numpyLikeDoc2(self):
+        #This should break since there is a mismatch betwwen docu and type hint
+        def fun(a: int, b: int = None):
+            '''
+            Function definition
+
+            Parameters
+            ----------
+            a: str
+                first number
+            b: int
+                optional argument
+            '''
+            return a if b is None else a + b
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        try:
+            parser.add_args_from_function(fun)
+            self.fail()
+        except AssertionError:
+            pass
+
+    def test_numpyLikeDoc3(self):
+        #This should break since there is a mismatch betwwen docu and type hint
+        def fun(a: int, b: List[int] = None):
+            '''
+            Function definition
+
+            Parameters
+            ----------
+            a: int
+                first number
+            b: list of int
+                optional argument
+            '''
+            return a if b is None else a + b[0]
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        parser.add_args_from_function(fun)
+        parser.print_help()
+        pars1 =  parser.parse_args(["--a", "1", "--b", "2"])
+        pars2 =  parser.parse_args_groups(["--a", "1", "--b", "2"])
+        self.assertEqual(pars1.g1, pars2["g"].g1)
+
+    def test_numpyLikeDoc4(self):
+        #This should break since there is a mismatch betwwen docu and type hint
+        def fun(a: int, b: List[int] = None):
+            '''
+            Function definition
+
+            Parameters
+            ----------
+            a: int
+                first number
+            b: int
+                optional argument
+            '''
+            return a if b is None else a + b[0]
+
+        parser = AutoArgumentParser()
+        parser.add_argument("--main", type=int)
+        group = parser.add_argument_group(title="g")
+        group.add_argument("--g1", type=int, default=-1)
+        try:
+            parser.add_args_from_function(fun)
+            self.fail()
+        except AssertionError:
+            pass

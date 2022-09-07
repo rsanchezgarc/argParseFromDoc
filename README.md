@@ -31,12 +31,12 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
   - Files (defined as`typing.TextIO` and `typing.BinaryIO`)
 - Ignoring/selecting a subset of the arguments of the function
   - Use `myarg:typing.Optional[VALID_TYPE]=None` to set it as not required parameter or `args_optional=["myarg"]` 
-- Creating a new parser or adding new arguments to it. You can use also parser groups
+- Creating a new parser or adding new arguments to it. You can also use parser groups
 - Several docsctring formats (see [docstring_parser](https://github.com/rr-/docstring_parser) )
 - Support for methods assuming first argument in definition is `self`
 
 ### Assumptions
-  - Positional arguments. Functions can have positional arguments, but the parser will treat them as 
+  - Positional arguments. Functions can have positional arguments, but the parser will consider all them as 
     if they were keyword/optional (always `--argname VALUE`)
   - If no default value is provided for an argument in the typing hint, argument will be considered as
     required (`parser.add_argument(..., required=True)`). The same applies to `default=None` except if the
@@ -49,8 +49,7 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
     - If a boolean argument defaults to True (`name:bool=True`), the parser sets
     the argument `name=False` if `--NOT_name` flag provided. Please notice that the name of
     the argument in the argument parser has been changed from `name` to `--NOT_name` to reflect that
-    but the argument is stored using the original name, so
-    no further changes are required
+    but the argument is stored using the original name, so no further changes in the code are required
   - Multiple arguments can be provided if using `typing.List`. For example:
         `def fun(several_strings: List[str]):`
   - Setting deafult values for `typing.TextIO` and `typing.BinaryIO` is not advisable, as they should be opened files. 
@@ -63,7 +62,7 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
     cat /etc/passwd | python count_lines --inputFile -
  
     ```
-  - Methods, including `__init__`, are supported providing `self` is always using in as the first 
+  - Methods, including `__init__`, are supported providing `self` is always used as the first 
     argument in the definition
   - When defining functions, `*arg` and `**kwargs` are ignored for the parser. No other `*` or `**` argument
     is supported.
@@ -77,17 +76,17 @@ Examples of documented functions are:
 ```
 def add(a: int, b: int):
     '''
-    @param a: first number
-    @param b: second number
+    @param a: first number. Mandatory
+    @param b: second number. Mandatory
     '''
     return a + b
     
 def printYourAge(age: int, name: str = "Unknown"):
     '''
     @param age: your age
-    @param name: your name
+    @param name: your name. This is optional
     '''
-    return a + b
+    return str(a) + " "+ b
     
 def addList(several_nums: List[int], b: int=1):
     '''
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(add(**vars(args)))
 ```
-Or you can directly use the AutoArgumentParser classs
+Or you can directly use the AutoArgumentParser class
 
 ```
 if __name__ == "__main__":
@@ -115,6 +114,7 @@ if __name__ == "__main__":
     parser = AutoArgumentParser()
     parser.add_args_from_function(add)
 ```
+
 If you want to add to a previously instantiated parser the arguements of the function,
 you just need to provide the original parser (or group) to the `get_parser_from_function` function.
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     print(add(**vars(args)))
 ```
 Finally, if your function has some arguments that you do not want to include
-to the parser, you can use the `args_to_ignore` option or if you want to use only a subset,
+to the parser, you can use the `args_to_ignore` option. If you want to use only a subset,
 use the `args_to_include` option. 
 
 ```
@@ -164,4 +164,4 @@ if __name__ == "__main__":
 ```
 
 
-Some additional examples can be found in [examples folder](examples) or in `tests/test_argParseFromDoc.py`
+Some additional examples can be found in [examples folder](examples) or in [test_argParseFromDoc.py](tests/test_argParseFromDoc.py)
