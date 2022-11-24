@@ -163,5 +163,27 @@ if __name__ == "__main__":
 
 ```
 
+You can use argParseFromDoc with subparsers easily. For instance:
+
+```
+    from argParseFromDoc import AutoArgumentParser, get_parser_from_function
+    parser = AutoArgumentParser("programName")
+
+    subparsers = parser.add_subparsers(help='command: this is to select a command', required=True, dest='command')
+    
+    parser1 = subparsers.add_parser('command1_name', help='')
+    get_parser_from_function(function1, parser=parser1)
+
+    parser2 = subparsers.add_parser('command2_name', help='')
+    get_parser_from_function(function2, parser=parser2)
+
+    arguments = parser.parse_args()
+    if arguments.command == "command1_name":
+        function1(**vars(parser.parse_args()))
+    elif arguments.command == "command2_name":
+        function2(**vars(parser.parse_args()))
+    else:
+        raise ValueError(f"Command not valid {arguments.command}")
+```
 
 Some additional examples can be found in [examples folder](examples) or in [test_argParseFromDoc.py](tests/test_argParseFromDoc.py)
