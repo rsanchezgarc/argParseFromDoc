@@ -169,7 +169,7 @@ You can use argParseFromDoc with subparsers easily. For instance:
     from argParseFromDoc import AutoArgumentParser, get_parser_from_function
     parser = AutoArgumentParser("programName")
 
-    subparsers = parser.add_subparsers(help='command: this is command 1', required=True, dest='command')
+    subparsers = parser.add_subparsers(help='command: this is to select a command', required=True, dest='command')
     
     parser1 = subparsers.add_parser('command1_name', help='')
     get_parser_from_function(function1, parser=parser1)
