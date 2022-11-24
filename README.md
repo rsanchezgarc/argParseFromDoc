@@ -179,9 +179,11 @@ You can use argParseFromDoc with subparsers easily. For instance:
 
     arguments = parser.parse_args()
     if arguments.command == "command1_name":
-        function1(**vars(parser.parse_args()))
+        del arguments.command
+        function1(**vars(arguments))
     elif arguments.command == "command2_name":
-        function2(**vars(parser.parse_args()))
+        del arguments.command
+        function2(**vars(arguments))
     else:
         raise ValueError(f"Command not valid {arguments.command}")
 ```
