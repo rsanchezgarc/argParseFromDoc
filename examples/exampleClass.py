@@ -20,4 +20,4 @@ if __name__ == "__main__":
     get_parser_from_function(Adder.add, parser= parser)
     args = vars(parser.parse_args())
     adder = Adder(**args)
-    print( adder.add(**args))
+    print(adder.add(**args))

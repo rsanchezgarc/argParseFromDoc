@@ -1,3 +1,4 @@
+import os
 import tempfile
 from io import StringIO
 from typing import Tuple, List, Dict, TextIO, Optional
@@ -510,3 +511,20 @@ class Test(TestCase):
             self.fail()
         except AssertionError:
             pass
+
+    def test_parse_and_call(self):
+
+        import subprocess
+        wdir = os.path.dirname(os.path.dirname(__file__))
+
+        out = subprocess.check_output(["python", "examples/exampleEasy.py", "--a", "32"], cwd=wdir)
+        self.assertEqual(out.decode().strip(), "32")
+
+        out = subprocess.check_output(["python", "examples/exampleAdd.py", "--a", "32", "--b", "1"], cwd=wdir)
+        self.assertEqual(out.decode().strip(), "33")
+
+        out = subprocess.check_output(["python", "examples/exampleBool.py", "--NOT_a", "--b"], cwd=wdir)
+        self.assertEqual(out.decode().strip(), "True")
+
+        out = subprocess.check_output(["python", "examples/exampleBool.py", "--NOT_a"], cwd=wdir)
+        self.assertEqual(out.decode().strip(), "False")

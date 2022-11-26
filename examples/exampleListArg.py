@@ -8,7 +8,6 @@ def addList(several_nums: List[int], b: int=1):
     return [a + b for a in several_nums]
 
 if __name__ == "__main__":
-    from argParseFromDoc import get_parser_from_function
-    parser = get_parser_from_function(addList)
-    args = parser.parse_args()
-    print(addList(**vars(args)))
+    from argParseFromDoc import parse_function_and_call
+    out = parse_function_and_call(addList)
+    print(out)

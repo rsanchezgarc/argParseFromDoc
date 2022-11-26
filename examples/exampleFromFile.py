@@ -13,11 +13,9 @@ def count_nlines(a: TextIO, b: BinaryIO):
 
 
 if __name__ == "__main__":
-    from argParseFromDoc import get_parser_from_function
-
-    parser = get_parser_from_function(count_nlines)
-    args = parser.parse_args()
-    print(count_nlines(**vars(args)))
+    from argParseFromDoc import parse_function_and_call
+    out = parse_function_and_call(count_nlines)
+    print(out)
 
     '''
 python -m examples.exampleFromFile --a examples/exampleFromFile.py  --b examples/__pycache__/exampleFromFile.cpython-37.pyc

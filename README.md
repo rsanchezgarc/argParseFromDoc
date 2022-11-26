@@ -1,11 +1,12 @@
 # argParseFromDoc
 
 A simple python package for creating/updating [argparse](https://docs.python.org/3/library/argparse.html)
-ArgumentParser(s) given a documented function.
+ArgumentParser(s) given a type hinted and documented function.
 
 ## Content
 
 - [Installation](#Installation)
+- [Quick overview](#Quick overview)
 - [Supported features](#Supported-features)
 - [Assumptions](#Assumptions)
 - [Usage](#Usage)
@@ -20,12 +21,39 @@ pip install .
 ```
 - Option 2. Installing with pip
 ```
+pip install argParseFromDoc
+```
+Or if you want the latest update
+```
 pip install git+https://github.com/rsanchezgarc/argParseFromDoc
 ```
 
-### Supported features
+### Quick overview
 
-- Argument types:
+argParseFromDoc allows you to create argument parsers directly from the type hints and the docstring of a function.
+The most common use case of creating a parser for a main function and calling it can be implemented in 2 lines if you
+have previously documented your function
+
+```
+def add(a: int, b: int):
+    '''
+    @param a: first number. 
+    @param b: second number.
+    '''
+    return a + b
+    
+if __name__ == "__main__":
+    from argParseFromDoc import parse_function_and_call
+    out = parse_function_and_call(add)
+    print(out)
+```
+
+argParseFromDoc also support more advanced features via the class `AutoArgumentParser` and the function `get_parser_from_function`.
+See below for more details
+
+### Supported features
+The following features are currently supported
+- Function argument types:
   - `int`, `str`, `float` and `bool`
   - (Homogeneous) Lists of any of the previous types (defined as`typing.List[primitive_type]`)
   - Files (defined as`typing.TextIO` and `typing.BinaryIO`)
@@ -38,10 +66,10 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
 ### Assumptions
   - Positional arguments. Functions can have positional arguments, but the parser will consider all them as 
     if they were keyword/optional (always `--argname VALUE`)
-  - If no default value is provided for an argument in the typing hint, argument will be considered as
+  - If no default value is provided for an argument in the function signature, argument will be considered as
     required (`parser.add_argument(..., required=True)`). The same applies to `default=None` except if the
     name of the argument is included in `args_optional` or it is declared as `typing.Optional`. 
-  - E.g `get_parser_from_function(..., args_optional=[name1, name2...])`  
+    <br>E.g `get_parser_from_function(..., args_optional=[name1, name2...])`  
   - Boolean arguments:
     - Boolean arguments must be provided with default value.
     - If a boolean argument defaults to False (`name:bool=False`), the parser sets
@@ -70,7 +98,7 @@ pip install git+https://github.com/rsanchezgarc/argParseFromDoc
 ### Usage
 
 You only need to document the type and possible default values for the arguments of your functions
-with [typing](https://docs.python.org/3/library/typing.html) and the description of each within the docstring.
+with [typing](https://docs.python.org/3/library/typing.html) and add the description of each within the docstring.
 Examples of documented functions are:
 
 ```
@@ -115,6 +143,15 @@ if __name__ == "__main__":
     parser.add_args_from_function(add)
 ```
 
+Finally, for convenience, you can create the parser, parse the argument and call the function
+in one line using
+
+``` 
+if __name__ == "__main__":
+    from argParseFromDoc import parse_function_and_call
+    out = parse_function_and_call(add)
+
+```
 If you want to add to a previously instantiated parser the arguements of the function,
 you just need to provide the original parser (or group) to the `get_parser_from_function` function.
 
@@ -166,6 +203,7 @@ if __name__ == "__main__":
 You can use argParseFromDoc with subparsers easily. For instance:
 
 ```
+if __name__ == "__main__":
     from argParseFromDoc import AutoArgumentParser, get_parser_from_function
     parser = AutoArgumentParser("programName")
 
