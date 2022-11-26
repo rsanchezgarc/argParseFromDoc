@@ -4,8 +4,7 @@ from io import StringIO
 from typing import Tuple, List, Dict, TextIO, Optional
 from unittest import TestCase
 
-from argParseFromDoc import AutoArgumentParser
-from argParseFromDoc.autoArgparseFunction import get_parser_from_function
+from argParseFromDoc import AutoArgumentParser, get_parser_from_function, parse_function_and_call
 
 
 class Test(TestCase):
@@ -516,7 +515,8 @@ class Test(TestCase):
 
         import subprocess
         wdir = os.path.dirname(os.path.dirname(__file__))
-
+        print(os.getcwd())
+        print(wdir)
         out = subprocess.check_output(["python", "examples/exampleEasy.py", "--a", "32"], cwd=wdir)
         self.assertEqual(out.decode().strip(), "32")
 
