@@ -6,7 +6,7 @@ ArgumentParser(s) given a type hinted and documented function.
 ## Content
 
 - [Installation](#Installation)
-- [Quick overview](#Quick overview)
+- [Quick overview](#Quick-overview)
 - [Supported features](#Supported-features)
 - [Assumptions](#Assumptions)
 - [Usage](#Usage)
