@@ -44,6 +44,9 @@ def generate_args_for_argparseFromDoc(fun, **kwargs) -> List[str]:
             continue
 
         value = kwargs[name]
+        if is_optional and value is None:
+            continue
+
         param_type = type_hints.get(name)
         inner_type = _get_inner_type(param_type)
 

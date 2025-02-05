@@ -1,4 +1,4 @@
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 from argParseFromDoc.autoArgparseFunction import get_parser_from_function
 from argParseFromDoc.AutoArgumentParser import AutoArgumentParser, parse_function_and_call
 from argParseFromDoc.commandStrGenerator import generate_command_for_argparseFromDoc
