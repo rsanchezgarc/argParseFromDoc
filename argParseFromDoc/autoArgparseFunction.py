@@ -92,7 +92,10 @@ def get_parser_from_function(callable: Callable, args_to_ignore: List[str] = Non
         name, typeFun, nargs, default, help, required = paramTuple
 
         required = (name not in args_optional and default is None) if required == True else False
-
+        if hasattr(default, "get"):
+            default = default.get()
+        elif hasattr(default, "result"):
+            default = default.result()
         if typeFun == bool:
             assert default is not None, "Error, bool arguments need to have associated default value. %s does not" % name
             if default is True:
